@@ -5,25 +5,6 @@ ENDPOINT_URL = "https://3j1u3b5524.execute-api.us-east-1.amazonaws.com"
 
 st.title("💬 Chatbot")
 
-try:
-    response = requests.get(ENDPOINT_URL + "/company")
-    if response.status_code == 200:
-        companies = response.json()
-        company_id_options = [company["name"] for company in companies]
-    else:
-        st.error("Falha ao obter a lista de empresas. Por favor, tente novamente.")
-        st.stop()
-except Exception as e:
-    st.error(f"Um erro ocorreu: {str(e)}")
-    st.stop()
-
-selected_company_name = st.selectbox("Empresa", company_id_options)
-
-selected_company_id = next(
-    (company['id'] for company in companies if company["name"] == selected_company_name),
-    None,
-)
-
 models = {
     "claude-v3-sonnet": "anthropic.claude-3-sonnet-20240229-v1:0",
     "claude-v3-haiku": "anthropic.claude-3-haiku-20240307-v1:0",
@@ -37,7 +18,6 @@ model_id_options = list(models.keys())
 selected_model_id = st.selectbox("Modelo", model_id_options)
 show_citations = st.checkbox("Mostrar citações")
 
-chosen_company_id = selected_company_id
 chosen_model_id = models[selected_model_id]
 
 if "messages" not in st.session_state:
@@ -54,7 +34,6 @@ if prompt := st.chat_input():
 
     request_data = {
         "question": prompt,
-        "companyId": chosen_company_id,
         "modelId": chosen_model_id,
     }
 
